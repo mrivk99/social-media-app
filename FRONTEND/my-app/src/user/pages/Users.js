@@ -3,7 +3,7 @@ import React from 'react';
 import UsersList from '../components/UsersList';
 
 const Users = () => {
-  // import users data from db
+  // import users data from db in the form of array of elements
   const USERS = [
     {
       id: 'u1',
