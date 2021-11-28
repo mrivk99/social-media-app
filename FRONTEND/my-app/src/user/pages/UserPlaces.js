@@ -35,7 +35,7 @@ const UserPlaces = () => {
   // access the userId from the URL
   const userId = useParams().userId;
   // filter the data from the db accorrding to userId
-  const loadedPlaces = DUMMY_PLACES.filter((place) => place.creator == userId);
+  const loadedPlaces = DUMMY_PLACES.filter((place) => place.creator === userId);
   return <PlaceList items={loadedPlaces}></PlaceList>;
 };
 export default UserPlaces;

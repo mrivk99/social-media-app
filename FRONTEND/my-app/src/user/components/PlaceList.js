@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import "./PlaceList.css";
 import Card from "../../shared/components/UIElements/Card";
