@@ -10,7 +10,7 @@ import Users from "./user/pages/Users";
 import NewPlace from "./places/pages/NewPlace";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import "./App.css";
-import UserPlaces from "./user/pages/UserPlaces";
+import UserPlaces from "./places/pages/UserPlaces";
 
 const App = () => {
   return (
