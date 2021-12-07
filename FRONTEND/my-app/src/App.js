@@ -11,6 +11,7 @@ import NewPlace from "./places/pages/NewPlace";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import "./App.css";
 import UserPlaces from "./places/pages/UserPlaces";
+import UpdatePlace from "./places/pages/UpdatePlace";
 
 const App = () => {
   return (
@@ -24,9 +25,14 @@ const App = () => {
           <Route path="/places/new" exact>
             <NewPlace />
           </Route>
+        {/* Add  the custom routes at the end  */}
+          <Route path="/places/:placeId" exact>
+            <UpdatePlace/>
+          </Route>
           <Route path="/:userId/places" exact>
             <UserPlaces/>
           </Route>
+
           <Redirect to="/" />
         </Switch>
       </main>
