@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import Button from "../../shared/components/FormElements/Button";
 import Input from "../../shared/components/FormElements/Input";
 import { VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../utils/validators";
-
+import '../pages/PlaceForm.css';
 const DUMMY_PLACES = [
   {
     id: "p1",
@@ -46,7 +46,7 @@ const UpdatePlace = () => {
     );
   }
   return (
-    <form>
+    <form className='place-form'>
       <Input
         id="title"
         element="input"
