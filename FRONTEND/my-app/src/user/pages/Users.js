@@ -14,6 +14,7 @@ const Users = () => {
     }
   ];
   
+
   return <UsersList items={USERS} /> ;
 };
 

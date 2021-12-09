@@ -5,29 +5,42 @@ import MainHeader from "./MainHeader";
 import { Link } from "react-router-dom";
 import NavLinks from "./NavLinks";
 import SideDrawer from "../Navigation/SideDrawer";
-import BackDrop from "../UIElements/Backdrop"
-
+import BackDrop from "../UIElements/Backdrop";
 
 const MainNavigation = (props) => {
-  const [drawerIsOpen , setDrawerIsOpen] = useState(false);
+  // Toggle the Side drawer by changing it's state
+  const [drawerIsOpen, setDrawerIsOpen] = useState(false);
 
-  const openDrawerHandler = ()=>{
+  const openDrawerHandler = () => {
     setDrawerIsOpen(true);
-  }
-  const closeDrawerHandler = ()=>{
+  };
+  const closeDrawerHandler = () => {
     setDrawerIsOpen(false);
-  }
+  };
   return (
+    // When a component to return multiple elements.
+    // Fragments let you group a list of children without adding extra nodes to the DOM.
     <React.Fragment>
-      {drawerIsOpen && <BackDrop onClick={closeDrawerHandler}/> }
-      {<SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
-        <nav className="main-navigation__drawer-nav">
-          <NavLinks />
-        </nav>
-      </SideDrawer>}
-      
+      {/* Side Drawer for smaller devices */}
+
+      {/* When drawer is open a Backdrop element is rendered
+      clicking on the Backdrop closes the drawer*/}
+      {drawerIsOpen && <BackDrop onClick={closeDrawerHandler} />}
+
+      {/* Rendered by clicking on the Button inside navigation*/}
+      {
+        <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
+          <nav className="main-navigation__drawer-nav">
+            <NavLinks />
+          </nav>
+        </SideDrawer>
+      }
+
       <MainHeader>
-        <button className="main-navigation__menu-btn" onClick={openDrawerHandler}>
+        <button
+          className="main-navigation__menu-btn"
+          onClick={openDrawerHandler}
+        >
           <span />
           <span />
           <span />

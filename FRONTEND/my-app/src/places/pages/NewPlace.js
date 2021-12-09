@@ -2,36 +2,41 @@ import React from "react";
 
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
-import { VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from '../../shared/utils/validators';
+import {
+  VALIDATOR_MINLENGTH,
+  VALIDATOR_REQUIRE,
+} from "../../shared/utils/validators";
 import "../pages/PlaceForm.css";
-
 import { useForm } from "../../shared/hooks/form-hook";
+{
+  /** Use a form hook everytime a user adds or edits a place..
+Better than creating new forms everytime*/
+}
 
 const NewPlace = () => {
-  const [formState,inputHandler] =  useForm(
+  const [formState, inputHandler] = useForm(
     {
       title: {
         value: '',
-        isValid: false,
+        isValid: false
       },
       description: {
         value: '',
-        isValid: false,
+        isValid: false
       },
       address: {
         value: '',
-        isValid: false,
-      },
+        isValid: false
+      }
     },
     false
   );
 
-  
-
-  const placeSubmitHandler = (event) => {
+  const placeSubmitHandler = event => {
     event.preventDefault();
-    console.log(formState.inputs);
+    console.log(formState.inputs); // send this to the backend!
   };
+
   return (
     <form className="place-form" onSubmit={placeSubmitHandler}>
       <Input
@@ -51,7 +56,6 @@ const NewPlace = () => {
         errorText="Please enter a valid description (at least 5 characters)."
         onInput={inputHandler}
       />
-
       <Input
         id="address"
         element="input"

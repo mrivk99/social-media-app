@@ -6,7 +6,7 @@ import "./SideDrawer.css";
 
 const SideDrawer = (props) => {
   const content = (
-      // mountonEnter/unmount adds/remove the element in DOM depending on state 
+      // mount/unmount adds/remove the element in DOM depending on state 
     <CSSTransition in={props.show} timeout={200} classNames="slide-in-left" mountOnEnter unmountOnExit>
       <aside className="side-drawer" onClick={props.onClick}>{props.children}</aside>
     </CSSTransition>
