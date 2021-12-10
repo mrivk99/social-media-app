@@ -1,4 +1,4 @@
-import React ,{useState,useCallback}from "react";
+import React, { useState, useCallback } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,57 +16,81 @@ import Auth from "./user/pages/Auth";
 import { AuthContext } from "./shared/context/auth-context";
 
 const App = () => {
- const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
- const login = useCallback(()=>{
-  setIsLoggedIn(true);
- } , []);
+  const login = useCallback(() => {
+    setIsLoggedIn(true);
+  }, []);
 
- const logout = useCallback(()=>{
-  setIsLoggedIn(false);
- } , []);
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+  }, []);
+
+  // routes depending on whether user is loggen in or not.
+
+  let routes;
+
+  if (isLoggedIn) {
+    routes = (
+      <Switch>
+        {/* List of Users */}
+        <Route path="/" exact>
+          <Users />
+        </Route>
+        {/* List of places for selected user */}
+        <Route path="/:userId/places" exact>
+          <UserPlaces />
+        </Route>
+        {/* New place form */}
+        {/* Only authenticated*/}
+        <Route path="/places/new" exact>
+          <NewPlace />
+        </Route>
+
+        {/* Update place form */}
+        {/* Only authenticated*/}
+        <Route path="/places/:placeId" exact>
+          <UpdatePlace />
+        </Route>
+        <Redirect to="/" />
+      </Switch>
+    );
+  } else {
+    routes = (
+      <Switch>
+        {/* List of Users */}
+        <Route path="/" exact>
+          <Users />
+        </Route>
+        {/* List of places for selected user */}
+        <Route path="/:userId/places" exact>
+          <UserPlaces />
+        </Route>
+        {/* Authentication */}
+        <Route path="/auth" exact>
+          <Auth />
+        </Route>
+        <Redirect to="/auth" />
+      </Switch>
+    );
+  }
+
+  if (isLoggedIn) {
+  }
   return (
-     //**When value of AuthContext.Provider changes 
+    //**When value of AuthContext.Provider changes
     //components tapping into it will change */}
-    <AuthContext.Provider value={ {isLoggedIn: isLoggedIn, login: login, logout: logout}} 
+    <AuthContext.Provider
+      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
     >
       <Router>
-      {/* Routes are visited in FCFS. Add  the custom routes at the end  */}
-      <MainNavigation />
-      <main>
-        <Switch>
-          {/* List of Users */}
-          <Route path="/" exact>
-            <Users />
-          </Route>
-
-          {/* New place form */}{/* Only authenticated*/}
-          <Route path="/places/new" exact>
-            <NewPlace />
-          </Route>
-
-          {/* Update place form */}{/* Only authenticated*/}
-          <Route path="/places/:placeId" exact>
-            <UpdatePlace />
-          </Route>
-
-          {/* List of places for selected user */}
-          <Route path="/:userId/places" exact>
-            <UserPlaces />
-          </Route>
-
-          {/* Authentication */}
-          <Route path="/auth" exact>
-            <Auth />
-          </Route>
-
-          {/* If path is unreachable redirect here */}
-          <Redirect to="/" />
-        </Switch>
-      </main>
-    </Router>
+        {/* Routes are visited in FCFS. Add  the custom routes at the end  */}
+        <MainNavigation />
+        <main>
+          <Switch>{routes}</Switch>
+        </main>
+      </Router>
     </AuthContext.Provider>
-    
   );
 };
 export default App;
