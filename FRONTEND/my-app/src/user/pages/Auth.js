@@ -11,6 +11,7 @@ import {
 import { useForm } from '../../shared/hooks/form-hook';
 import './Auth.css';
 
+
 const Auth = () => {
 
     const [isLoginMode, setIsLoginMode] = useState(true);
