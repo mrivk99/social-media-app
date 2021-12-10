@@ -12,6 +12,7 @@ import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import "./App.css";
 import UserPlaces from "./places/pages/UserPlaces";
 import UpdatePlace from "./places/pages/UpdatePlace";
+import Auth from "./user/pages/Auth";
 
 const App = () => {
   return (
@@ -40,6 +41,11 @@ const App = () => {
             <UserPlaces />
           </Route>
 
+          {/* Authentication */}
+          <Route path="/auth" exact>
+            <Auth />
+          </Route>
+          
           {/* If path is unreachable redirect here */}
           <Redirect to="/" />
         </Switch>
