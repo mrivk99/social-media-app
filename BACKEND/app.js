@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const HttpError = require("./models/http-error");
 
 // configure app
 const app = express();
@@ -13,6 +14,10 @@ app.use(bodyParser.json());
 // use the imported file for the endpoint
 app.use("/api/places", placeRoutes);
 
+app.use((req, res, next) => {
+  const error = new HttpError("Could not find this route", 404);
+  throw error;
+});
 // So this function, will execute if any middleware in front of it yields an error
 app.use((error, req, res, next) => {
   //check if a response has already been sent
