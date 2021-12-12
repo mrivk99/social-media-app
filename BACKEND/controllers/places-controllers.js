@@ -1,5 +1,5 @@
 const uuid = require("uuid").v4;
-const {validationResult} = require('express-validator');
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 // import data for db
@@ -52,12 +52,11 @@ const getPlacesByUserId = (req, res, next) => {
   res.json({ places });
 };
 const createPlace = (req, res, next) => {
-
   const errors = validationResult(req);
 
-  if(!errors.isEmpty()){
+  if (!errors.isEmpty()) {
     console.log(errors);
-    throw new HttpError('Invalid Input. Please check your inputs')
+    throw new HttpError("Invalid Input. Please check your inputs");
   }
   // map the json data from the body and store it in constants
   const { title, description, coordinates, address, creator } = req.body;
@@ -77,6 +76,14 @@ const createPlace = (req, res, next) => {
 };
 // Only allow updating title and description
 const updatePlace = (req, res, next) => {
+  // use express js validation
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    throw new HttpError("Invalid Input. Please check your inputs");
+  }
+
   // store the data from request body in variables
   const { title, description } = req.body;
   const placeId = req.params.pid;
@@ -96,6 +103,9 @@ const updatePlace = (req, res, next) => {
 const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
 
+  if(!DUMMY_PLACES.find(p=>{p.id !== placeId})){
+    return new HttpError("Could not find a place with given Id",404)
+  }
   // filter the array where the condition is met , replace the entire array.
   DUMMY_PLACES = DUMMY_PLACES.filter((p) => {
     p.id !== placeId;

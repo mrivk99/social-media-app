@@ -1,6 +1,7 @@
 const express = require("express");
 const { check } = require("express-validator");
 
+
 const HttpError = require("../models/http-error");
 const placesControlllers = require("../controllers/places-controllers");
 const router = express.Router();
@@ -20,7 +21,10 @@ router.post(
   placesControlllers.createPlace
 );
 
-router.patch("/:pid", placesControlllers.updatePlace);
+router.patch("/:pid",[
+  check('title').not().isEmpty(),
+  check("description").isLength({ min: 5 })
+], placesControlllers.updatePlace);
 
 router.delete("/:pid", placesControlllers.deletePlace);
 
