@@ -1,5 +1,7 @@
 const express = require("express");
 
+const HttpError = require("../models/http-error");
+
 const router = express.Router();
 
 // import data for db
@@ -26,11 +28,9 @@ router.get("/:pid", (req, res, next) => {
     return p.id === placeId;
   });
 
-  //Handle error METHOD 1 - Using express Errror handler
+  //Handle error using error model
   if (!place) {
-    const error = new Error("Could not find a place for the provided place id");
-    error.code = 404;
-    throw error;
+   throw new HttpError("Could not find a place for the provided place id",404);
   }
   //  return data
   res.json({ place: place });
@@ -45,9 +45,7 @@ router.get("/user/:uid", (req, res, next) => {
 
   //Handle error METHOD 2 - Using middleware function
   if (!userPlace) {
-    const error = new Error("Could not find a place for the provided user id");
-    error.code = 404;
-    return next(error);
+    return next(new HttpError("Could not find a place for the provided user id",404));
   }
   res.json({ place: userPlace });
 });
