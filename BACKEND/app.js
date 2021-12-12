@@ -5,14 +5,18 @@ const HttpError = require("./models/http-error");
 // configure app
 const app = express();
 
-// import the places-routes file
+// import the routes file
 const placeRoutes = require("./routes/places-routes");
+const usersRoutes = require('./routes/users-routes');
+
 
 // parse the body and extract json and convert it to regular javascript objects
 app.use(bodyParser.json());
 
-// use the imported file for the endpoint
+// use the imported files for the endpoints
 app.use("/api/places", placeRoutes);
+app.use("/api/users",usersRoutes);
+
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route", 404);

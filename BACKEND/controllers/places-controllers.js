@@ -41,14 +41,14 @@ const getPlacesByUserId = (req, res, next) => {
     return place.creator === userId;
   });
 
-    //Handle error METHOD 2 - Using middleware function
-  if(!places || places.length === 0){
+  //Handle error METHOD 2 - Using middleware function
+  if (!places || places.length === 0) {
     return next(
-        new HttpError("Could not find a place for the provided user id", 404)
-      );
+      new HttpError("Could not find a place for the provided user id", 404)
+    );
   }
 
-  res.json({ places});
+  res.json({ places });
 };
 const createPlace = (req, res, next) => {
   // map the json data from the body and store it in constants
@@ -67,7 +67,6 @@ const createPlace = (req, res, next) => {
 
   res.status(201).json({ place: createdPlace });
 };
-
 // Only allow updating title and description
 const updatePlace = (req, res, next) => {
   // store the data from request body in variables
@@ -86,15 +85,15 @@ const updatePlace = (req, res, next) => {
 
   res.status(200).json({ place: updatedPlace });
 };
-
 const deletePlace = (req, res, next) => {
-    const placeId = req.params.pid;
+  const placeId = req.params.pid;
 
-    // filter the array where the condition is met , replace the entire array.
-    DUMMY_PLACES = DUMMY_PLACES.filter(p => {p.id !== placeId});
+  // filter the array where the condition is met , replace the entire array.
+  DUMMY_PLACES = DUMMY_PLACES.filter((p) => {
+    p.id !== placeId;
+  });
 
-    res.status(200).json({message : "Deleted place."});
-
+  res.status(200).json({ message: "Deleted place." });
 };
 
 exports.getPlaceById = getPlaceById;
