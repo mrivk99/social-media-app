@@ -7,6 +7,9 @@ const app = express();
 // import the places-routes file
 const placeRoutes = require("./routes/places-routes");
 
+// parse the body and extract json and convert it to regular javascript objects
+app.use(bodyParser.json());
+
 // use the imported file for the endpoint
 app.use("/api/places", placeRoutes);
 

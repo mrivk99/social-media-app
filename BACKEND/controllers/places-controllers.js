@@ -1,3 +1,5 @@
+const uuid = require('uuid').v4;
+
 const HttpError = require("../models/http-error");
 // import data for db
 const DUMMY_PLACES = [
@@ -10,7 +12,7 @@ const DUMMY_PLACES = [
       lng: -73.9871516,
     },
     address: "20 W 34th St, New York, NY 10001",
-    creator: "u1",
+    creator: "u1"
   },
 ];
 
@@ -47,6 +49,25 @@ const getPlaceByUserId = (req, res, next) => {
   }
   res.json({ place: userPlace });
 };
+const createPlace = (req,res,next) =>{
+    // map the json data from the body and store it in constants
+    const {title , description , coordinates , address , creator} = req.body;
 
+    const createdPlace = {
+        id : uuid(),
+        title : title,
+        description : description,
+        location : coordinates,
+        address, // address : address
+        creator // creator : creator
+    };
+
+    DUMMY_PLACES.push(createdPlace);
+
+    res.status(201).json({place:createdPlace})
+    
+    
+}
 exports.getPlaceById = getPlaceById;
 exports.getPlaceByUserId=getPlaceByUserId;
+exports.createPlace = createPlace;
