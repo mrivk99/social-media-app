@@ -21,25 +21,34 @@ const DUMMY_PLACES = [
 router.get("/:pid", (req, res, next) => {
   // extract placeId from URL
   const placeId = req.params.pid; // { pid: 'p1' }
-  // search the given ID in db 
+  // search the given ID in db
   const place = DUMMY_PLACES.find((p) => {
     return p.id === placeId;
   });
+
+  //Handle error METHOD 1 - Using express Errror handler
+  if (!place) {
+    const error = new Error("Could not find a place for the provided place id");
+    error.code = 404;
+    throw error;
+  }
   //  return data
-  res.json({ place : place}); 
+  res.json({ place: place });
 });
 
-router.get('/user/:uid',(req,res,next) =>{
+router.get("/user/:uid", (req, res, next) => {
+  const userId = req.params.uid;
 
-  const userId  = req.params.uid;
+  const userPlace = DUMMY_PLACES.find((place) => {
+    return place.creator === userId;
+  });
 
-  const userPlace = DUMMY_PLACES.find((place)=>{
-    return place.creator===userId;
-  })
-  res.json({place:userPlace});
+  //Handle error METHOD 2 - Using middleware function
+  if (!userPlace) {
+    const error = new Error("Could not find a place for the provided user id");
+    error.code = 404;
+    return next(error);
+  }
+  res.json({ place: userPlace });
 });
 module.exports = router;
-
-
-
-
