@@ -17,7 +17,7 @@ const DUMMY_PLACES = [
   },
 ];
 
-// configure get request
+// configure get request (this url is added after the app.use('/api/places' , placeRoutes)) in app.js
 router.get("/:pid", (req, res, next) => {
   // extract placeId from URL
   const placeId = req.params.pid; // { pid: 'p1' }
@@ -29,6 +29,15 @@ router.get("/:pid", (req, res, next) => {
   res.json({ place : place}); 
 });
 
+router.get('/user/:uid',(req,res,next) =>{
+
+  const userId  = req.params.uid;
+
+  const userPlace = DUMMY_PLACES.find((place)=>{
+    return place.creator===userId;
+  })
+  res.json({place:userPlace});
+});
 module.exports = router;
 
 
