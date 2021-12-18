@@ -103,7 +103,7 @@ const updatePlace = (req, res, next) => {
 const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
 
-  if(!DUMMY_PLACES.find(p=>{p.id !== placeId})){
+if(!DUMMY_PLACES.find(p=>{p.id !== placeId})){
     return new HttpError("Could not find a place with given Id",404)
   }
   // filter the array where the condition is met , replace the entire array.
