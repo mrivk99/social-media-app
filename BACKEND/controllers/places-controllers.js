@@ -1,6 +1,6 @@
 const uuid = require("uuid").v4;
 const { validationResult } = require("express-validator");
-
+const Place = require('../models/place');
 const HttpError = require("../models/http-error");
 // import data for db
 let DUMMY_PLACES = [
