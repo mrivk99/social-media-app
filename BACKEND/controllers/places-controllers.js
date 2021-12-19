@@ -98,7 +98,8 @@ const createPlace = async (req, res, next) => {
   res.status(201).json({ place: createdPlace });
 };
 // Only allow updating title and description
-const updatePlace = (req, res, next) => {
+// PATCH Request
+const updatePlace = async(req, res, next) => {
   // use express js validation
   const errors = validationResult(req);
 
@@ -111,17 +112,30 @@ const updatePlace = (req, res, next) => {
   const { title, description } = req.body;
   const placeId = req.params.pid;
 
-  // Use the spread operator (...) to "pull all elements of the old array out" and add store them in new const
-  // Don't directly update the title and description in db , instead make the final object before updating
-  const updatedPlace = { ...DUMMY_PLACES.find((p) => p.id === placeId) };
-  const placeIndex = DUMMY_PLACES.findIndex((p) => p.id === placeId);
-
+  // find the place
+  let updatedPlace;
+  try {
+    updatedPlace = await Place.findById(placeId);
+  } catch (err) {
+    const error = new HttpError(
+      "No such place exists. Please try again later",
+      500
+    );
+    // stop trying when error occurs
+    return next(error);
+  }
+  // update the place
   updatedPlace.title = title;
   updatedPlace.description = description;
+  // save the place
+ try{
+   await updatedPlace.save();
+  }
+ catch(err){
+  const error = new HttpError("Something went wrong while updating the place.",500);
+ }
 
-  DUMMY_PLACES[placeIndex] = updatedPlace;
-
-  res.status(200).json({ place: updatedPlace });
+  res.status(200).json({ place: updatedPlace.toObject({getters: true}) });
 };
 const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
