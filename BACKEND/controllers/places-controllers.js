@@ -55,7 +55,9 @@ const getPlacesByUserId = async (req, res, next) => {
   }
   //  convert the returned object by mongoose, to normal jsonObject
   // returned object is array , map it
-  res.json({ places : places.map(place=>place.toObject({getters: true})) });
+  res.json({
+    places: places.map((place) => place.toObject({ getters: true })),
+  });
 };
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
@@ -99,7 +101,7 @@ const createPlace = async (req, res, next) => {
 };
 // Only allow updating title and description
 // PATCH Request
-const updatePlace = async(req, res, next) => {
+const updatePlace = async (req, res, next) => {
   // use express js validation
   const errors = validationResult(req);
 
@@ -128,34 +130,34 @@ const updatePlace = async(req, res, next) => {
   updatedPlace.title = title;
   updatedPlace.description = description;
   // save the place
- try{
-   await updatedPlace.save();
+  try {
+    await updatedPlace.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong while updating the place.",
+      500
+    );
   }
- catch(err){
-  const error = new HttpError("Something went wrong while updating the place.",500);
- }
 
-  res.status(200).json({ place: updatedPlace.toObject({getters: true}) });
+  res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
 };
-const deletePlace = async(req, res, next) => {
+const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
   // find the place
   let place;
-  try{
+  try {
     place = await Place.findById(placeId);
-
-  }catch(err){
-    const error = new HttpError("Couldn't find place. Please try again",500);
+  } catch (err) {
+    const error = new HttpError("Couldn't find place. Please try again", 500);
     return next(error);
   }
   // delete the place
-  try{
+  try {
     await place.remove();
-  }catch(err){
-    const error = new HttpError("Couldn't remove place. Please try again",500);
+  } catch (err) {
+    const error = new HttpError("Couldn't remove place. Please try again", 500);
     return next(error);
   }
-  
 
   res.status(200).json({ message: "Deleted place." });
 };
