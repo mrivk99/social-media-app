@@ -137,20 +137,25 @@ const updatePlace = async(req, res, next) => {
 
   res.status(200).json({ place: updatedPlace.toObject({getters: true}) });
 };
-const deletePlace = (req, res, next) => {
+const deletePlace = async(req, res, next) => {
   const placeId = req.params.pid;
+  // find the place
+  let place;
+  try{
+    place = await Place.findById(placeId);
 
-  if (
-    !DUMMY_PLACES.find((p) => {
-      p.id !== placeId;
-    })
-  ) {
-    return new HttpError("Could not find a place with given Id", 404);
+  }catch(err){
+    const error = new HttpError("Couldn't find place. Please try again",500);
+    return next(error);
   }
-  // filter the array where the condition is met , replace the entire array.
-  DUMMY_PLACES = DUMMY_PLACES.filter((p) => {
-    p.id !== placeId;
-  });
+  // delete the place
+  try{
+    await place.remove();
+  }catch(err){
+    const error = new HttpError("Couldn't remove place. Please try again",500);
+    return next(error);
+  }
+  
 
   res.status(200).json({ message: "Deleted place." });
 };
