@@ -1,6 +1,7 @@
 const uuid = require("uuid").v4;
 const { validationResult } = require("express-validator");
 const Place = require('../models/place');
+const getCoordsForAddress = require('../utils/location');
 const HttpError = require("../models/http-error");
 // import data for db
 let DUMMY_PLACES = [
@@ -51,16 +52,23 @@ const getPlacesByUserId = (req, res, next) => {
 
   res.json({ places });
 };
-const createPlace = (req, res, next) => {
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     console.log(errors);
-    throw new HttpError("Invalid Input. Please check your inputs");
+    return next(
+      HttpError("Invalid Input. Please check your inputs")
+      );
   }
   // map the json data from the body and store it in constants
-  const { title, description, coordinates, address, creator } = req.body;
+  const { title, description, address, creator } = req.body;
 
+  let coordinates;
+  try{
+    coords = await getCoordsForAddress(address);
+  } catch(error){
+    return next(error);
+  }
   const createdPlace = {
     id: uuid(),
     title: title,
