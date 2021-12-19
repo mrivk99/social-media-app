@@ -31,12 +31,21 @@ const getPlaceById = async (req, res, next) => {
   //  convert the returned object by mongoose, to normal jsonObject
   res.json({ place: place.toObject({ getters: true }) });
 };
-const getPlacesByUserId = (req, res, next) => {
+const getPlacesByUserId = async (req, res, next) => {
+  // get userId from query
   const userId = req.params.uid;
 
-  const places = DUMMY_PLACES.filter((place) => {
-    return place.creator === userId;
-  });
+  // find the user in db
+  let places;
+  try {
+    places = await Place.find({ creator: userId });
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching places for the user id failed.Please try again later",
+      500
+    );
+    return next(error);
+  }
 
   //Handle error METHOD 2 - Using middleware function
   if (!places || places.length === 0) {
@@ -44,8 +53,9 @@ const getPlacesByUserId = (req, res, next) => {
       new HttpError("Could not find a place for the provided user id", 404)
     );
   }
-
-  res.json({ places });
+  //  convert the returned object by mongoose, to normal jsonObject
+  // returned object is array , map it
+  res.json({ places : places.map(place=>place.toObject({getters: true})) });
 };
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
