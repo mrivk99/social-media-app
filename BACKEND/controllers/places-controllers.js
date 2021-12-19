@@ -4,23 +4,32 @@ const Place = require("../models/place");
 const getCoordsForAddress = require("../utils/location");
 const HttpError = require("../models/http-error");
 
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   // extract placeId from URL
-  const placeId = req.params.pid; // { pid: 'p1' }
+  const placeId = req.params.pid; //
   // search the given ID in db
-  const place = DUMMY_PLACES.find((p) => {
-    return p.id === placeId;
-  });
+  let place;
+  try {
+    place = await Place.findById(placeId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong. Please try again later",
+      500
+    );
+    // stop trying when error occurs
+    return next(error);
+  }
 
   //Handle error using error model
   if (!place) {
-    throw new HttpError(
+    const error = new HttpError(
       "Could not find a place for the provided place id",
       404
     );
+    return next(error);
   }
-  //  return data
-  res.json({ place: place });
+  //  convert the returned object by mongoose, to normal jsonObject
+  res.json({ place: place.toObject({ getters: true }) });
 };
 const getPlacesByUserId = (req, res, next) => {
   const userId = req.params.uid;
@@ -63,20 +72,20 @@ const createPlace = async (req, res, next) => {
     location: coordinates,
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg",
-    creator // creator : creator
+    creator, // creator : creator
   });
   try {
+    // returns a promise
     await createdPlace.save();
   } catch (err) {
     const error = new HttpError(
-      'Creating new place failed. Please try again later',
+      "Creating new place failed. Please try again later",
       500
     );
     // to avoid infinite loop use next
     return next(error);
   }
-  res.status(201).json({place : createdPlace});
-  
+  res.status(201).json({ place: createdPlace });
 };
 // Only allow updating title and description
 const updatePlace = (req, res, next) => {
