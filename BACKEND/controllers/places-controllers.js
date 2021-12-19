@@ -1,22 +1,8 @@
 const uuid = require("uuid").v4;
 const { validationResult } = require("express-validator");
-const Place = require('../models/place');
-const getCoordsForAddress = require('../utils/location');
+const Place = require("../models/place");
+const getCoordsForAddress = require("../utils/location");
 const HttpError = require("../models/http-error");
-// import data for db
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: "20 W 34th St, New York, NY 10001",
-    creator: "u1",
-  },
-];
 
 const getPlaceById = (req, res, next) => {
   // extract placeId from URL
@@ -56,31 +42,41 @@ const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
-    return next(
-      HttpError("Invalid Input. Please check your inputs")
-      );
+    return next(HttpError("Invalid Input. Please check your inputs"));
   }
+
   // map the json data from the body and store it in constants
   const { title, description, address, creator } = req.body;
 
+  // dummy geocoding the address
   let coordinates;
-  try{
-    coords = await getCoordsForAddress(address);
-  } catch(error){
+  try {
+    coordinates = await getCoordsForAddress(address);
+  } catch (error) {
     return next(error);
   }
-  const createdPlace = {
-    id: uuid(),
+  // map the variables
+  const createdPlace = new Place({
     title: title,
     description: description,
+    address,
     location: coordinates,
-    address, // address : address
-    creator, // creator : creator
-  };
-
-  DUMMY_PLACES.push(createdPlace);
-
-  res.status(201).json({ place: createdPlace });
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg",
+    creator // creator : creator
+  });
+  try {
+    await createdPlace.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Creating new place failed. Please try again later',
+      500
+    );
+    // to avoid infinite loop use next
+    return next(error);
+  }
+  res.status(201).json({place : createdPlace});
+  
 };
 // Only allow updating title and description
 const updatePlace = (req, res, next) => {
@@ -111,8 +107,12 @@ const updatePlace = (req, res, next) => {
 const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
 
-if(!DUMMY_PLACES.find(p=>{p.id !== placeId})){
-    return new HttpError("Could not find a place with given Id",404)
+  if (
+    !DUMMY_PLACES.find((p) => {
+      p.id !== placeId;
+    })
+  ) {
+    return new HttpError("Could not find a place with given Id", 404);
   }
   // filter the array where the condition is met , replace the entire array.
   DUMMY_PLACES = DUMMY_PLACES.filter((p) => {
