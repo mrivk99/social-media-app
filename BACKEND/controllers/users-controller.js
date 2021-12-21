@@ -1,5 +1,9 @@
 const uuid = require("uuid").v4;
 const { validationResult } = require("express-validator");
+
+const HttpError = require("../models/http-error");
+const User = require("../models/users");
+
 const DUMMY_USERS = [
   {
     id: "u1",
@@ -8,8 +12,6 @@ const DUMMY_USERS = [
     password: "testers",
   },
 ];
-
-const HttpError = require("../models/http-error");
 
 const getUsers = (req, res, next) => {
   res.json({ users: DUMMY_USERS });
@@ -28,32 +30,55 @@ const login = (req, res, next) => {
   res.json({ message: "Logged In" });
 };
 
-const signup = (req, res, next) => {
-
+const signup = async (req, res, next) => {
   const errors = validationResult(req);
 
-  if(!errors.isEmpty()){
-    throw new HttpError('Invalid inputs passed, please check input data',422);
-}
-  const { name, email, password } = req.body;
-
-  // find if email already exists
-  const hasUser = DUMMY_USERS.find((u) => u.email === email);
-
-  if (hasUser) {
-    throw new HttpError("Could not create user.User already exists");
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError("Invalid inputs passed, please check input data", 422)
+    );
+  }
+  const { name, email, password , places } = req.body;
+  // find if User already exists
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError("SignUp failed.Try again later", 500);
+    return next(error);
   }
 
-  const createdUser = {
-    id: uuid(),
-    name, // name : name
-    email,
-    password,
-  };
+  if (existingUser) {
+    const error = new HttpError(
+      "Could not create user.User already exists",
+      422
+    );
+    return next(error);
+  }
 
-  DUMMY_USERS.push(createdUser);
+  const createdUser = new User({
+    name:name,
+    email:email,
+    image:
+      "https://media.istockphoto.com/photos/handsome-indian-man-using-mobile-phone-picture-id1094067774?k=20&m=1094067774&s=612x612&w=0&h=o7DPIyONt60piBli7b9-9BmH9RbLTElLRPn2a5Bfoqs=",
+    password:password,
+    places:places
+  });
 
-  res.status(201).json({ user: createdUser });
+  try {
+    // returns a promise
+    await createdUser.save();
+  } catch (err) {
+    console.log(err);
+    const error = new HttpError(
+      "Signing up failed. Please try again later",
+      500
+    );
+    // to avoid infinite loop use next
+    return next(error);
+  }
+
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
 exports.getUsers = getUsers;

@@ -63,7 +63,7 @@ const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
-    return next(HttpError("Invalid Input. Please check your inputs"));
+    return next(new HttpError("Invalid Input. Please check your inputs"));
   }
 
   // map the json data from the body and store it in constants
@@ -107,7 +107,9 @@ const updatePlace = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     console.log(errors);
-    throw new HttpError("Invalid Input. Please check your inputs");
+    return next(
+      new HttpError("Invalid inputs passed, please check input data", 422)
+    );
   }
 
   // store the data from request body in variables
@@ -137,6 +139,7 @@ const updatePlace = async (req, res, next) => {
       "Something went wrong while updating the place.",
       500
     );
+    return next(error);
   }
 
   res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
