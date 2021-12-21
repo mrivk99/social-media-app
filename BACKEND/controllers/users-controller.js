@@ -4,30 +4,40 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http-error");
 const User = require("../models/users");
 
-const DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "Max Schwarz",
-    email: "test@test.com",
-    password: "testers",
-  },
-];
+// find is async task , so use let instead of const to store the returned response
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async(req, res, next) => {
+  let users;
+  try {
+    users = await User.find({}, "-password");
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching users failed. Please try again later",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((p) => p.email === email);
-  if (!identifiedUser || identifiedUser.password !== password) {
-    throw new HttpError(
-      "Could not identify user , credentials seem to be wrong",
-      401
-    );
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError("User doesn't exist.Try again later", 500);
+    return next(error);
   }
-  res.json({ message: "Logged In" });
+
+  if (!existingUser || existingUser.password !== password) {
+    const error = new HttpError("Invalid Credentials. Try again later.", 401);
+    return next(error);
+  }
+
+  res.json({ message: "User " + email + " Logged In" });
 };
 
 const signup = async (req, res, next) => {
@@ -38,7 +48,7 @@ const signup = async (req, res, next) => {
       new HttpError("Invalid inputs passed, please check input data", 422)
     );
   }
-  const { name, email, password , places } = req.body;
+  const { name, email, password, places } = req.body;
   // find if User already exists
   let existingUser;
   try {
@@ -57,19 +67,18 @@ const signup = async (req, res, next) => {
   }
 
   const createdUser = new User({
-    name:name,
-    email:email,
+    name: name,
+    email: email,
     image:
       "https://media.istockphoto.com/photos/handsome-indian-man-using-mobile-phone-picture-id1094067774?k=20&m=1094067774&s=612x612&w=0&h=o7DPIyONt60piBli7b9-9BmH9RbLTElLRPn2a5Bfoqs=",
-    password:password,
-    places:places
+    password: password,
+    places: places,
   });
 
   try {
     // returns a promise
     await createdUser.save();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Signing up failed. Please try again later",
       500
