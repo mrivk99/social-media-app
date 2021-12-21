@@ -9,6 +9,7 @@ const User = require("../models/users");
 const getUsers = async(req, res, next) => {
   let users;
   try {
+    // return all the users with their respective fields except passwords
     users = await User.find({}, "-password");
   } catch (err) {
     const error = new HttpError(
