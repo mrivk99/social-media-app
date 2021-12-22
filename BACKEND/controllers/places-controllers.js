@@ -3,6 +3,8 @@ const { validationResult } = require("express-validator");
 const Place = require("../models/place");
 const getCoordsForAddress = require("../utils/location");
 const HttpError = require("../models/http-error");
+const User = require("../models/users");
+const mongoose = require("mongoose");
 
 const getPlaceById = async (req, res, next) => {
   // extract placeId from URL
@@ -84,11 +86,35 @@ const createPlace = async (req, res, next) => {
     location: coordinates,
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg",
-    creator, // creator : creator
+    creator,
   });
+
+  let user;
   try {
-    // returns a promise
-    await createdPlace.save();
+    // validate the creator (user ID ) in db
+    user = await User.findById(creator);
+  } catch (err) {
+    const error = new HttpError(
+      "Creatimng [lace failed. Please try again later",
+      500
+    );
+  }
+  // if user doesn't exists
+  if (!user) {
+    const error = new HttpError(
+      "Could not find the user for the provided ID",
+      404
+    );
+  }
+  // Save the place (creator added already). Add place to places Array of creator(user).
+  // Use a session to do multiple transactions in sync and revert all if error occurs.
+  try {
+    const sess1 = await mongoose.startSession();
+    sess1.startTransaction();
+    await createdPlace.save({ session: sess1 });
+    user.places.push(createdPlace);
+    await user.save({ session: sess1 });
+    await sess1.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Creating new place failed. Please try again later",
