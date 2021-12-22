@@ -175,7 +175,7 @@ const deletePlace = async (req, res, next) => {
   // find the place
   let place;
   try {
-    // get old of place and it's references (creator) to delete
+    // get hold of place and it's entire object references (creator)
     place = await Place.findById(placeId).populate('creator');
   } catch (err) {
     const error = new HttpError("Couldn't find place. Please try again", 500);
