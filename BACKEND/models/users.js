@@ -11,7 +11,8 @@ const userSchema = new schema({
     email:{type: String , required: true , unique: true },
     password: {type: String , required: true , minlength:6 },
     image:{type: String , required : true},
-    places:{type: String , required: true}
+    // list of places(ID's) for a particular user
+    places:[{type: mongoose.Types.ObjectId , required: true,ref:'Place'}]
 });
 
 

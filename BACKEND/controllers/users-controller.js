@@ -49,7 +49,7 @@ const signup = async (req, res, next) => {
       new HttpError("Invalid inputs passed, please check input data", 422)
     );
   }
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
   // find if User already exists
   let existingUser;
   try {
@@ -73,7 +73,7 @@ const signup = async (req, res, next) => {
     image:
       "https://media.istockphoto.com/photos/handsome-indian-man-using-mobile-phone-picture-id1094067774?k=20&m=1094067774&s=612x612&w=0&h=o7DPIyONt60piBli7b9-9BmH9RbLTElLRPn2a5Bfoqs=",
     password: password,
-    places: places,
+    places: []
   });
 
   try {
