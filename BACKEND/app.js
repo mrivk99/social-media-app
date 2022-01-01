@@ -35,7 +35,7 @@ app.use((error, req, res, next) => {
 // connect to db 
 // then() => connection is successful and catch() => catch the error.
 mongoose
-  .connect("mongodb+srv://MRIDUL:dBdkBzHhrW6YTAG0@cluster0.y6qig.mongodb.net/places?retryWrites=true&w=majority")
+  .connect("mongodb+srv://MRIDUL:dBdkBzHhrW6YTAG0@cluster0.y6qig.mongodb.net/mern?retryWrites=true&w=majority")
   .then(app.listen(5000))
   .catch((err) => {
     console.log(err);
