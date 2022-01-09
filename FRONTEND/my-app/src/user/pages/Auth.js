@@ -59,12 +59,35 @@ const Auth = () => {
   };
   const authSubmitHandler = async (event) => {
     event.preventDefault();
+    // verify
+    setIsLoading(true);
 
     if (isLoginMode) {
+      try {
+        const response = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        // convert the response to JSON
+        const responseData = await response.json();
+      
+        setIsLoading(false);
+        auth.login();
+        // Catch a 400/500 dish response error which is not caught by default
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+      } catch (err) {
+        setIsLoading(false);
+        setError(err.message || " Something went wrong. Please try later.");
+      }
     } else {
       try {
-        setIsLoading(true);
-
         const response = await fetch("http://localhost:5000/api/users/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -77,7 +100,7 @@ const Auth = () => {
 
         // convert the response to JSON
         const responseData = await response.json();
-        console.log(responseData);
+   
         setIsLoading(false);
         auth.login();
         // Catch a 400/500 dish response error which is not caught by default
@@ -94,7 +117,7 @@ const Auth = () => {
   const errorHandler = () => {
     setError(null);
   };
-  
+
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={errorHandler} />
