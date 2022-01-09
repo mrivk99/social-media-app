@@ -23,7 +23,7 @@ const getUsers = async(req, res, next) => {
 };
 
 const login = async (req, res, next) => {
-  const { email, password } = req.body;
+const {name, email, password } = req.body;
 
   let existingUser;
   try {

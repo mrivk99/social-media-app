@@ -14,6 +14,17 @@ const usersRoutes = require("./routes/users-routes");
 // parse the body and extract json and convert it to regular javascript objects
 app.use(bodyParser.json());
 
+// Comply with CORS policy
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+  next();
+});
+
 // use the imported files for the endpoints
 app.use("/api/places", placeRoutes);
 app.use("/api/users", usersRoutes);
@@ -32,12 +43,13 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occured!" });
 });
 
-// connect to db 
+// connect to db
 // then() => connection is successful and catch() => catch the error.
 mongoose
-  .connect("mongodb+srv://MRIDUL:dBdkBzHhrW6YTAG0@cluster0.y6qig.mongodb.net/mern?retryWrites=true&w=majority")
+  .connect(
+    "mongodb+srv://MRIDUL:dBdkBzHhrW6YTAG0@cluster0.y6qig.mongodb.net/mern?retryWrites=true&w=majority"
+  )
   .then(app.listen(5000))
   .catch((err) => {
     console.log(err);
   });
-
